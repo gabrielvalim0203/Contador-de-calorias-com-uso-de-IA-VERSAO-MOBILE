@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/meal_provider.dart';
+import 'profile_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -31,6 +32,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 24),
+
+        // Perfil Section
+        const Text(
+          'Dados do Usuário',
+          style: TextStyle(fontWeight: FontWeight.w600, color: Colors.indigo),
+        ),
+        const SizedBox(height: 8),
+        ListTile(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: const BorderSide(color: Color(0xFFE2E8F0))),
+          leading: const CircleAvatar(
+            backgroundColor: Color(0xFFEEF2FF),
+            child: Icon(Icons.person, color: Colors.indigo),
+          ),
+          title: const Text('Meu Perfil', style: TextStyle(fontWeight: FontWeight.bold)),
+          subtitle: const Text('Peso, altura e cálculo de TMB'),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const ProfileScreen()),
+            );
+          },
+        ),
+
+        const SizedBox(height: 32),
         const Text(
           'Chave da API Google Gemini',
           style: TextStyle(fontWeight: FontWeight.w600),
@@ -53,7 +79,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           },
         ),
 
-
         const SizedBox(height: 8),
         const Text(
           'Necessária para a funcionalidade de IA Mágica.',
@@ -68,11 +93,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
         const SizedBox(height: 8),
         Consumer<MealProvider>(
           builder: (context, provider, _) => ListTile(
-            contentPadding: EdgeInsets.zero,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: const BorderSide(color: Color(0xFFE2E8F0))),
             title: Text('${provider.goal} kcal'),
-             trailing: const Icon(Icons.edit),
+             subtitle: Text(provider.profile.useAutoGoal ? 'Calculada automaticamente' : 'Definida manualmente'),
+             trailing: provider.profile.useAutoGoal ? const Icon(Icons.bolt, color: Colors.amber) : const Icon(Icons.edit),
              onTap: () async {
-                  final controller = TextEditingController(text: provider.goal.toString());
+                   if (provider.profile.useAutoGoal) {
+                     ScaffoldMessenger.of(context).showSnackBar(
+                       const SnackBar(content: Text('A meta está automática. Altere no seu Perfil.')),
+                     );
+                     return;
+                   }
+
+                   final controller = TextEditingController(text: provider.goal.toString());
                    final newGoal = await showDialog<int>(
                      context: context,
                      builder: (ctx) => AlertDialog(

@@ -2,6 +2,42 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+class UserProfile {
+  final int age;
+  final double weight;
+  final double height;
+  final String gender; // 'Masculino' or 'Feminino'
+  final double activityLevel;
+  final bool useAutoGoal;
+
+  UserProfile({
+    this.age = 25,
+    this.weight = 70.0,
+    this.height = 170.0,
+    this.gender = 'Masculino',
+    this.activityLevel = 1.2,
+    this.useAutoGoal = false,
+  });
+
+  Map<String, dynamic> toJson() => {
+    'age': age,
+    'weight': weight,
+    'height': height,
+    'gender': gender,
+    'activityLevel': activityLevel,
+    'useAutoGoal': useAutoGoal,
+  };
+
+  factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
+    age: json['age'] ?? 25,
+    weight: (json['weight'] as num?)?.toDouble() ?? 70.0,
+    height: (json['height'] as num?)?.toDouble() ?? 170.0,
+    gender: json['gender'] ?? 'Masculino',
+    activityLevel: (json['activityLevel'] as num?)?.toDouble() ?? 1.2,
+    useAutoGoal: json['useAutoGoal'] ?? false,
+  );
+}
+
 class Meal {
   final String id;
   final String name;
@@ -83,6 +119,7 @@ class MealProvider with ChangeNotifier {
   List<HistoryItem> _history = [];
   int _goal = 2000;
   String _apiKey = '';
+  UserProfile _profile = UserProfile();
   
   // OPCIONAL: Coloque sua chave aqui para ela já vir configurada!
   // (Lembre-se de apagar antes de subir para o GitHub!)
@@ -92,9 +129,26 @@ class MealProvider with ChangeNotifier {
 
   List<Meal> get meals => _meals;
   List<HistoryItem> get history => _history;
-  int get goal => _goal;
   String get apiKey => _apiKey;
   DateTime get selectedDate => _selectedDate;
+  UserProfile get profile => _profile;
+
+  int get goal {
+    if (_profile.useAutoGoal) {
+      return calculatedTDEE;
+    }
+    return _goal;
+  }
+
+  int get calculatedTDEE {
+    double tmb;
+    if (_profile.gender == 'Masculino') {
+      tmb = (10 * _profile.weight) + (6.25 * _profile.height) - (5 * _profile.age) + 5;
+    } else {
+      tmb = (10 * _profile.weight) + (6.25 * _profile.height) - (5 * _profile.age) - 161;
+    }
+    return (tmb * _profile.activityLevel).round();
+  }
 
   List<Meal> get currentMeals {
     return _meals.where((meal) {
@@ -136,6 +190,12 @@ class MealProvider with ChangeNotifier {
     // Load API Key
     _apiKey = prefs.getString('apiKey') ?? _hardcodedApiKey;
 
+    // Load Profile
+    final profileJson = prefs.getString('userProfile');
+    if (profileJson != null) {
+      _profile = UserProfile.fromJson(jsonDecode(profileJson));
+    }
+
     notifyListeners();
   }
 
@@ -145,6 +205,7 @@ class MealProvider with ChangeNotifier {
     prefs.setString('history', jsonEncode(_history.map((e) => e.toJson()).toList()));
     prefs.setInt('goal', _goal);
     prefs.setString('apiKey', _apiKey);
+    prefs.setString('userProfile', jsonEncode(_profile.toJson()));
   }
 
   void addMeal(String name, int calories, {int protein = 0, int carbs = 0, int fat = 0}) {
@@ -217,6 +278,12 @@ class MealProvider with ChangeNotifier {
 
   void setApiKey(String key) {
     _apiKey = key;
+    _saveToPrefs();
+    notifyListeners();
+  }
+
+  void updateProfile(UserProfile newProfile) {
+    _profile = newProfile;
     _saveToPrefs();
     notifyListeners();
   }

@@ -51,6 +51,13 @@ class DailySummary extends StatelessWidget {
               ),
               InkWell(
                 onTap: () async {
+                   if (provider.profile.useAutoGoal) {
+                     ScaffoldMessenger.of(context).showSnackBar(
+                       const SnackBar(content: Text('A meta está automática. Altere no seu Perfil.')),
+                     );
+                     return;
+                   }
+                   
                    // Simple dialog to update goal
                    final controller = TextEditingController(text: goal.toString());
                    final newGoal = await showDialog<int>(
