@@ -134,6 +134,16 @@ class DailySummary extends StatelessWidget {
               Text('$percentage% da meta', style: const TextStyle(color: Color(0xFFC7D2FE), fontSize: 12)),
             ],
           ),
+          const SizedBox(height: 20),
+          // Macronutrients Row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildMacroItem('Proteína', '${provider.totalProtein}g', const Color(0xFFFCA5A5)),
+              _buildMacroItem('Carbos', '${provider.totalCarbs}g', const Color(0xFFFDBA74)),
+              _buildMacroItem('Gordura', '${provider.totalFat}g', const Color(0xFF93C5FD)),
+            ],
+          ),
           const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
@@ -160,8 +170,8 @@ class DailySummary extends StatelessWidget {
               icon: const Text('✅'),
               label: const Text('Concluir Dia', style: TextStyle(color: Colors.white)),
               style: OutlinedButton.styleFrom(
-                side: BorderSide(color: Colors.white.withOpacity(0.2)),
-                backgroundColor: Colors.white.withOpacity(0.1),
+                side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+                backgroundColor: Colors.white.withValues(alpha: 0.1),
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
@@ -169,6 +179,30 @@ class DailySummary extends StatelessWidget {
           )
         ],
       ),
+    );
+  }
+
+  Widget _buildMacroItem(String label, String value, Color color) {
+    return Column(
+      children: [
+        Text(
+          label.toUpperCase(),
+          style: const TextStyle(color: Color(0xFFC7D2FE), fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+        ),
+        const SizedBox(height: 4),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.2),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: color.withValues(alpha: 0.3)),
+          ),
+          child: Text(
+            value,
+            style: TextStyle(color: color, fontSize: 14, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ],
     );
   }
 }

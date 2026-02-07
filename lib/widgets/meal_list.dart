@@ -49,9 +49,24 @@ class MealList extends StatelessWidget {
               meal.name,
               style: const TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF1E293B)),
             ),
-            subtitle: Text(
-              '${meal.calories} kcal',
-              style: const TextStyle(color: Color(0xFF64748B)),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${meal.calories} kcal',
+                  style: const TextStyle(color: Color(0xFF64748B), fontSize: 13),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    _buildSmallMacro('P', '${meal.protein}g', const Color(0xFFFCA5A5)),
+                    const SizedBox(width: 8),
+                    _buildSmallMacro('C', '${meal.carbs}g', const Color(0xFFFDBA74)),
+                    const SizedBox(width: 8),
+                    _buildSmallMacro('G', '${meal.fat}g', const Color(0xFF93C5FD)),
+                  ],
+                ),
+              ],
             ),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
@@ -61,24 +76,56 @@ class MealList extends StatelessWidget {
                   onPressed: () async {
                     final nameController = TextEditingController(text: meal.name);
                     final calController = TextEditingController(text: meal.calories.toString());
+                    final proteinController = TextEditingController(text: meal.protein.toString());
+                    final carbsController = TextEditingController(text: meal.carbs.toString());
+                    final fatController = TextEditingController(text: meal.fat.toString());
                     
                     final result = await showDialog<bool>(
                       context: context,
                       builder: (ctx) => AlertDialog(
                         title: const Text('Editar Refeição'),
-                        content: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            TextField(
-                              controller: nameController,
-                              decoration: const InputDecoration(labelText: 'Nome'),
-                            ),
-                            TextField(
-                              controller: calController,
-                              keyboardType: TextInputType.number,
-                              decoration: const InputDecoration(labelText: 'Calorias'),
-                            ),
-                          ],
+                        content: SingleChildScrollView(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              TextField(
+                                controller: nameController,
+                                decoration: const InputDecoration(labelText: 'Nome'),
+                              ),
+                              TextField(
+                                controller: calController,
+                                keyboardType: TextInputType.number,
+                                decoration: const InputDecoration(labelText: 'Calorias'),
+                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: TextField(
+                                      controller: proteinController,
+                                      keyboardType: TextInputType.number,
+                                      decoration: const InputDecoration(labelText: 'Prot (g)'),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: TextField(
+                                      controller: carbsController,
+                                      keyboardType: TextInputType.number,
+                                      decoration: const InputDecoration(labelText: 'Carb (g)'),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: TextField(
+                                      controller: fatController,
+                                      keyboardType: TextInputType.number,
+                                      decoration: const InputDecoration(labelText: 'Gord (g)'),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                         actions: [
                           TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancelar')),
@@ -93,8 +140,19 @@ class MealList extends StatelessWidget {
                     if (result == true) {
                       final name = nameController.text.trim();
                       final calories = int.tryParse(calController.text);
+                      final protein = int.tryParse(proteinController.text) ?? 0;
+                      final carbs = int.tryParse(carbsController.text) ?? 0;
+                      final fat = int.tryParse(fatController.text) ?? 0;
+                      
                       if (name.isNotEmpty && calories != null) {
-                        provider.updateMeal(meal.id, name, calories);
+                        provider.updateMeal(
+                          meal.id, 
+                          name, 
+                          calories,
+                          protein: protein,
+                          carbs: carbs,
+                          fat: fat,
+                        );
                       }
                     }
                   },
@@ -111,6 +169,21 @@ class MealList extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildSmallMacro(String label, String value, Color color) {
+    return Row(
+      children: [
+        Text(
+          '$label: ',
+          style: TextStyle(color: color.withValues(alpha: 0.7), fontSize: 11, fontWeight: FontWeight.bold),
+        ),
+        Text(
+          value,
+          style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.bold),
+        ),
+      ],
     );
   }
 }

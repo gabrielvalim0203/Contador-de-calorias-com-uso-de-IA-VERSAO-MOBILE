@@ -105,10 +105,16 @@ class _AIInputState extends State<AIInput> {
 
         final prompt = '''
           Analise a seguinte ${ _imageFile != null ? 'imagem e ' : '' }descrição de refeição e retorne APENAS um JSON array válido.
-          Para cada item identificado na refeição, estime as calorias aproximadas.
+          Para cada item identificado na refeição, estime:
+          - Nome do item
+          - Calorias (int)
+          - Proteínas em gramas (int)
+          - Carboidratos em gramas (int)
+          - Gorduras em gramas (int)
+          
           Se a quantidade não for especificada, assuma uma porção média padrão.
           Responda EXCLUSIVAMENTE o código JSON, sem formatação markdown ou textos adicionais.
-          Formato: [{"name": "Item", "calories": 0}]
+          Formato: [{"name": "Item", "calories": 0, "protein": 0, "carbs": 0, "fat": 0}]
           
           Refeição: ${text.isNotEmpty ? text : 'Identifique a partir da imagem'}
         ''';
@@ -142,7 +148,13 @@ class _AIInputState extends State<AIInput> {
             int count = 0;
             for (var item in jsonList) {
               if (item is Map && item.containsKey('name') && item.containsKey('calories')) {
-                provider.addMeal(item['name'], item['calories']);
+                provider.addMeal(
+                  item['name'], 
+                  item['calories'],
+                  protein: item['protein'] ?? 0,
+                  carbs: item['carbs'] ?? 0,
+                  fat: item['fat'] ?? 0,
+                );
                 count++;
               }
             }

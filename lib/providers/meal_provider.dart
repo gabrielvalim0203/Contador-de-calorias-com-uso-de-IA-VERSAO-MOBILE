@@ -7,14 +7,28 @@ class Meal {
   final String name;
   final int calories;
   final DateTime date;
+  final int protein;
+  final int carbs;
+  final int fat;
 
-  Meal({required this.id, required this.name, required this.calories, required this.date});
+  Meal({
+    required this.id, 
+    required this.name, 
+    required this.calories, 
+    required this.date,
+    this.protein = 0,
+    this.carbs = 0,
+    this.fat = 0,
+  });
 
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,
         'calories': calories,
         'date': date.toIso8601String(),
+        'protein': protein,
+        'carbs': carbs,
+        'fat': fat,
       };
 
   factory Meal.fromJson(Map<String, dynamic> json) => Meal(
@@ -22,6 +36,9 @@ class Meal {
         name: json['name'],
         calories: json['calories'],
         date: DateTime.parse(json['date']),
+        protein: json['protein'] ?? 0,
+        carbs: json['carbs'] ?? 0,
+        fat: json['fat'] ?? 0,
       );
 }
 
@@ -29,15 +46,35 @@ class HistoryItem {
   final String id;
   final String name;
   final int calories;
+  final int protein;
+  final int carbs;
+  final int fat;
 
-  HistoryItem({required this.id, required this.name, required this.calories});
+  HistoryItem({
+    required this.id, 
+    required this.name, 
+    required this.calories,
+    this.protein = 0,
+    this.carbs = 0,
+    this.fat = 0,
+  });
 
-  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'calories': calories};
+  Map<String, dynamic> toJson() => {
+    'id': id, 
+    'name': name, 
+    'calories': calories,
+    'protein': protein,
+    'carbs': carbs,
+    'fat': fat,
+  };
 
   factory HistoryItem.fromJson(Map<String, dynamic> json) => HistoryItem(
         id: json['id'],
         name: json['name'],
         calories: json['calories'],
+        protein: json['protein'] ?? 0,
+        carbs: json['carbs'] ?? 0,
+        fat: json['fat'] ?? 0,
       );
 }
 
@@ -68,6 +105,9 @@ class MealProvider with ChangeNotifier {
   }
 
   int get totalCalories => currentMeals.fold(0, (sum, item) => sum + item.calories);
+  int get totalProtein => currentMeals.fold(0, (sum, item) => sum + item.protein);
+  int get totalCarbs => currentMeals.fold(0, (sum, item) => sum + item.carbs);
+  int get totalFat => currentMeals.fold(0, (sum, item) => sum + item.fat);
 
   MealProvider() {
     _loadFromPrefs();
@@ -107,23 +147,36 @@ class MealProvider with ChangeNotifier {
     prefs.setString('apiKey', _apiKey);
   }
 
-  void addMeal(String name, int calories) {
+  void addMeal(String name, int calories, {int protein = 0, int carbs = 0, int fat = 0}) {
     final newMeal = Meal(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       name: name,
       calories: calories,
       date: _selectedDate,
+      protein: protein,
+      carbs: carbs,
+      fat: fat,
     );
 
     _meals.insert(0, newMeal);
     
-    // Add to history if unique
-    final exists = _history.any((h) => h.name.toLowerCase() == name.toLowerCase() && h.calories == calories);
+    // Add to history if unique (including macros in check)
+    final exists = _history.any((h) => 
+      h.name.toLowerCase() == name.toLowerCase() && 
+      h.calories == calories &&
+      h.protein == protein &&
+      h.carbs == carbs &&
+      h.fat == fat
+    );
+    
     if (!exists) {
       _history.insert(0, HistoryItem(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         name: name,
         calories: calories,
+        protein: protein,
+        carbs: carbs,
+        fat: fat,
       ));
     }
 
@@ -137,7 +190,7 @@ class MealProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void updateMeal(String id, String name, int calories) {
+  void updateMeal(String id, String name, int calories, {int protein = 0, int carbs = 0, int fat = 0}) {
     final index = _meals.indexWhere((m) => m.id == id);
     if (index != -1) {
       final oldMeal = _meals[index];
@@ -146,6 +199,9 @@ class MealProvider with ChangeNotifier {
         name: name,
         calories: calories,
         date: oldMeal.date,
+        protein: protein,
+        carbs: carbs,
+        fat: fat,
       );
       _saveToPrefs();
       notifyListeners();
