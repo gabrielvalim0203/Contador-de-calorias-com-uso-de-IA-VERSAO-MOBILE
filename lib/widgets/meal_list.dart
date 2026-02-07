@@ -53,12 +53,61 @@ class MealList extends StatelessWidget {
               '${meal.calories} kcal',
               style: const TextStyle(color: Color(0xFF64748B)),
             ),
-            trailing: IconButton(
-              icon: const Icon(Icons.delete_outline, color: Color(0xFF94A3B8)),
-              onPressed: () {
-                provider.removeMeal(meal.id);
-              },
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.edit_outlined, color: Color(0xFF94A3B8)),
+                  onPressed: () async {
+                    final nameController = TextEditingController(text: meal.name);
+                    final calController = TextEditingController(text: meal.calories.toString());
+                    
+                    final result = await showDialog<bool>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Editar Refeição'),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TextField(
+                              controller: nameController,
+                              decoration: const InputDecoration(labelText: 'Nome'),
+                            ),
+                            TextField(
+                              controller: calController,
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(labelText: 'Calorias'),
+                            ),
+                          ],
+                        ),
+                        actions: [
+                          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancelar')),
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, true),
+                            child: const Text('Salvar'),
+                          ),
+                        ],
+                      ),
+                    );
+
+                    if (result == true) {
+                      final name = nameController.text.trim();
+                      final calories = int.tryParse(calController.text);
+                      if (name.isNotEmpty && calories != null) {
+                        provider.updateMeal(meal.id, name, calories);
+                      }
+                    }
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete_outline, color: Color(0xFF94A3B8)),
+                  onPressed: () {
+                    provider.removeMeal(meal.id);
+                  },
+                ),
+              ],
             ),
+
           ),
         );
       },

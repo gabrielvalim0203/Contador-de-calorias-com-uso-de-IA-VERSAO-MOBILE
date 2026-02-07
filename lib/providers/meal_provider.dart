@@ -137,6 +137,22 @@ class MealProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void updateMeal(String id, String name, int calories) {
+    final index = _meals.indexWhere((m) => m.id == id);
+    if (index != -1) {
+      final oldMeal = _meals[index];
+      _meals[index] = Meal(
+        id: oldMeal.id,
+        name: name,
+        calories: calories,
+        date: oldMeal.date,
+      );
+      _saveToPrefs();
+      notifyListeners();
+    }
+  }
+
+
   void setGoal(int newGoal) {
     _goal = newGoal;
     _saveToPrefs();

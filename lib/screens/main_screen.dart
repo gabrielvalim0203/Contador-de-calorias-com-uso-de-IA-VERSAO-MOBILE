@@ -108,24 +108,41 @@ class HeaderTitle extends StatelessWidget {
           child: const Icon(Icons.restaurant_menu, size: 20, color: Colors.white),
         ),
         const SizedBox(width: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Diário Alimentar',
-              style: TextStyle(
-                color: Colors.indigo,
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Diário Alimentar',
+                style: TextStyle(
+                  color: Colors.indigo,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
               ),
-            ),
-             if (!isToday) 
-               Text(
-                 'Visualizando: ${DateFormat('dd/MM', 'pt_BR').format(provider.selectedDate)}',
-                 style: const TextStyle(fontSize: 12, color: Colors.indigo),
-               )
-          ],
+              Text(
+                isToday ? 'Hoje' : DateFormat('dd/MM/yyyy', 'pt_BR').format(provider.selectedDate),
+                style: const TextStyle(fontSize: 12, color: Colors.indigo),
+              )
+            ],
+          ),
         ),
+        IconButton(
+          icon: const Icon(Icons.calendar_month, color: Colors.indigo),
+          onPressed: () async {
+            final DateTime? picked = await showDatePicker(
+              context: context,
+              initialDate: provider.selectedDate,
+              firstDate: DateTime(2023),
+              lastDate: DateTime.now().add(const Duration(days: 365)),
+              locale: const Locale('pt', 'BR'),
+            );
+            if (picked != null) {
+              provider.setSelectedDate(picked);
+            }
+          },
+        ),
+
       ],
     );
   }

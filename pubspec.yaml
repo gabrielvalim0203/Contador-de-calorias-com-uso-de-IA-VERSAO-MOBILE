@@ -30,6 +30,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
 
   # Icons
   cupertino_icons: ^1.0.8
@@ -39,13 +42,19 @@ dependencies:
   provider: ^6.1.1
 
   # Date Formatting
-  intl: ^0.19.0
+  intl: ^0.20.2
+
 
   # Persistence
   shared_preferences: ^2.2.2
 
   # AI
-  google_generative_ai: ^0.2.0
+  google_generative_ai: ^0.4.7
+  http: ^1.2.1
+  image_picker: ^1.2.1
+
+
+
 
 dev_dependencies:
   flutter_test:

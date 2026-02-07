@@ -11,6 +11,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final _keyController = TextEditingController();
+  bool _isObscured = true;
 
   @override
   void initState() {
@@ -18,6 +19,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final provider = Provider.of<MealProvider>(context, listen: false);
     _keyController.text = provider.apiKey;
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -36,15 +38,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
         const SizedBox(height: 8),
         TextField(
           controller: _keyController,
-          decoration: const InputDecoration(
+          obscureText: _isObscured,
+          decoration: InputDecoration(
             hintText: 'Cole sua chave aqui',
-            border: OutlineInputBorder(),
-            prefixIcon: Icon(Icons.key),
+            border: const OutlineInputBorder(),
+            prefixIcon: const Icon(Icons.key),
+            suffixIcon: IconButton(
+              icon: Icon(_isObscured ? Icons.visibility_off : Icons.visibility),
+              onPressed: () => setState(() => _isObscured = !_isObscured),
+            ),
           ),
           onChanged: (val) {
             Provider.of<MealProvider>(context, listen: false).setApiKey(val);
           },
         ),
+
+
         const SizedBox(height: 8),
         const Text(
           'Necessária para a funcionalidade de IA Mágica.',
