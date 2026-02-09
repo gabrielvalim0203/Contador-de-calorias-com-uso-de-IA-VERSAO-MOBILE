@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../config/env_config.dart';
 
 class UserProfile {
   final int age;
@@ -118,13 +119,9 @@ class MealProvider with ChangeNotifier {
   List<Meal> _meals = [];
   List<HistoryItem> _history = [];
   int _goal = 2000;
-  String _apiKey = '';
+  String _apiKey = EnvConfig.geminiApiKey;
   UserProfile _profile = UserProfile();
   
-  // OPCIONAL: Coloque sua chave aqui para ela já vir configurada!
-  // (Lembre-se de apagar antes de subir para o GitHub!)
-  static const String _hardcodedApiKey = ''; 
-
   DateTime _selectedDate = DateTime.now();
 
   List<Meal> get meals => _meals;
@@ -187,8 +184,8 @@ class MealProvider with ChangeNotifier {
     // Load Goal
     _goal = prefs.getInt('goal') ?? 2000;
 
-    // Load API Key
-    _apiKey = prefs.getString('apiKey') ?? _hardcodedApiKey;
+    // Load API Key - Prioritize gespeicherte Key, fallback to Env
+    _apiKey = prefs.getString('apiKey') ?? EnvConfig.geminiApiKey;
 
     // Load Profile
     final profileJson = prefs.getString('userProfile');

@@ -50,7 +50,7 @@ class _AIInputState extends State<AIInput> {
     final provider = Provider.of<MealProvider>(context, listen: false);
     final String trimmedKey = provider.apiKey.trim();
     if (trimmedKey.isEmpty) {
-      setState(() => _error = 'Configure sua API Key nas configurações primeiro.');
+      setState(() => _error = 'API Key não configurada. Adicione uma chave no menu de configurações para usar esta funcionalidade.');
       return;
     }
 

@@ -57,35 +57,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
 
         const SizedBox(height: 32),
-        const Text(
-          'Chave da API Google Gemini',
-          style: TextStyle(fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 8),
-        TextField(
-          controller: _keyController,
-          obscureText: _isObscured,
-          decoration: InputDecoration(
-            hintText: 'Cole sua chave aqui',
-            border: const OutlineInputBorder(),
-            prefixIcon: const Icon(Icons.key),
-            suffixIcon: IconButton(
-              icon: Icon(_isObscured ? Icons.visibility_off : Icons.visibility),
-              onPressed: () => setState(() => _isObscured = !_isObscured),
-            ),
-          ),
-          onChanged: (val) {
-            Provider.of<MealProvider>(context, listen: false).setApiKey(val);
-          },
-        ),
-
-        const SizedBox(height: 8),
-        const Text(
-          'Necessária para a funcionalidade de IA Mágica.',
-          style: TextStyle(color: Colors.grey, fontSize: 12),
-        ),
-        
-        const SizedBox(height: 32),
          const Text(
           'Meta Diária',
           style: TextStyle(fontWeight: FontWeight.w600),
