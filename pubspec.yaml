@@ -55,6 +55,12 @@ dependencies:
 
 
 
+  # Visuals
+  fl_chart: ^0.70.2
+
+  # Notifications
+  flutter_local_notifications: ^18.0.1
+  timezone: ^0.9.4
 
 dev_dependencies:
   flutter_test:

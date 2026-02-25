@@ -4,6 +4,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 import '../providers/meal_provider.dart';
 import '../widgets/daily_summary.dart';
+import '../widgets/water_tracker.dart';
 import '../widgets/ai_input.dart';
 import '../widgets/meal_list.dart';
 import '../widgets/meal_form.dart';
@@ -158,6 +159,7 @@ class HomeContent extends StatelessWidget {
       child: Column(
         children: const [
           DailySummary(),
+          WaterTracker(),
           AIInput(),
           MealList(),
           SizedBox(height: 80), // Space for FAB

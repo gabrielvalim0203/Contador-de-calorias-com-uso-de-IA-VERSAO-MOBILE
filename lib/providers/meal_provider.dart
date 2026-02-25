@@ -2,118 +2,9 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/env_config.dart';
-
-class UserProfile {
-  final int age;
-  final double weight;
-  final double height;
-  final String gender; // 'Masculino' or 'Feminino'
-  final double activityLevel;
-  final bool useAutoGoal;
-
-  UserProfile({
-    this.age = 25,
-    this.weight = 70.0,
-    this.height = 170.0,
-    this.gender = 'Masculino',
-    this.activityLevel = 1.2,
-    this.useAutoGoal = false,
-  });
-
-  Map<String, dynamic> toJson() => {
-    'age': age,
-    'weight': weight,
-    'height': height,
-    'gender': gender,
-    'activityLevel': activityLevel,
-    'useAutoGoal': useAutoGoal,
-  };
-
-  factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
-    age: json['age'] ?? 25,
-    weight: (json['weight'] as num?)?.toDouble() ?? 70.0,
-    height: (json['height'] as num?)?.toDouble() ?? 170.0,
-    gender: json['gender'] ?? 'Masculino',
-    activityLevel: (json['activityLevel'] as num?)?.toDouble() ?? 1.2,
-    useAutoGoal: json['useAutoGoal'] ?? false,
-  );
-}
-
-class Meal {
-  final String id;
-  final String name;
-  final int calories;
-  final DateTime date;
-  final int protein;
-  final int carbs;
-  final int fat;
-
-  Meal({
-    required this.id, 
-    required this.name, 
-    required this.calories, 
-    required this.date,
-    this.protein = 0,
-    this.carbs = 0,
-    this.fat = 0,
-  });
-
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'calories': calories,
-        'date': date.toIso8601String(),
-        'protein': protein,
-        'carbs': carbs,
-        'fat': fat,
-      };
-
-  factory Meal.fromJson(Map<String, dynamic> json) => Meal(
-        id: json['id'],
-        name: json['name'],
-        calories: json['calories'],
-        date: DateTime.parse(json['date']),
-        protein: json['protein'] ?? 0,
-        carbs: json['carbs'] ?? 0,
-        fat: json['fat'] ?? 0,
-      );
-}
-
-class HistoryItem {
-  final String id;
-  final String name;
-  final int calories;
-  final int protein;
-  final int carbs;
-  final int fat;
-
-  HistoryItem({
-    required this.id, 
-    required this.name, 
-    required this.calories,
-    this.protein = 0,
-    this.carbs = 0,
-    this.fat = 0,
-  });
-
-  Map<String, dynamic> toJson() => {
-    'id': id, 
-    'name': name, 
-    'calories': calories,
-    'protein': protein,
-    'carbs': carbs,
-    'fat': fat,
-  };
-
-  factory HistoryItem.fromJson(Map<String, dynamic> json) => HistoryItem(
-        id: json['id'],
-        name: json['name'],
-        calories: json['calories'],
-        protein: json['protein'] ?? 0,
-        carbs: json['carbs'] ?? 0,
-        fat: json['fat'] ?? 0,
-      );
-}
+import '../models/meal.dart';
+import '../models/user_profile.dart';
+import '../models/history_item.dart';
 
 class MealProvider with ChangeNotifier {
   List<Meal> _meals = [];
@@ -132,19 +23,9 @@ class MealProvider with ChangeNotifier {
 
   int get goal {
     if (_profile.useAutoGoal) {
-      return calculatedTDEE;
+      return _profile.calculatedTDEE;
     }
     return _goal;
-  }
-
-  int get calculatedTDEE {
-    double tmb;
-    if (_profile.gender == 'Masculino') {
-      tmb = (10 * _profile.weight) + (6.25 * _profile.height) - (5 * _profile.age) + 5;
-    } else {
-      tmb = (10 * _profile.weight) + (6.25 * _profile.height) - (5 * _profile.age) - 161;
-    }
-    return (tmb * _profile.activityLevel).round();
   }
 
   List<Meal> get currentMeals {
@@ -184,7 +65,7 @@ class MealProvider with ChangeNotifier {
     // Load Goal
     _goal = prefs.getInt('goal') ?? 2000;
 
-    // Load API Key - Prioritize gespeicherte Key, fallback to Env
+    // Load API Key
     _apiKey = prefs.getString('apiKey') ?? EnvConfig.geminiApiKey;
 
     // Load Profile
@@ -218,7 +99,7 @@ class MealProvider with ChangeNotifier {
 
     _meals.insert(0, newMeal);
     
-    // Add to history if unique (including macros in check)
+    // Add to history if unique
     final exists = _history.any((h) => 
       h.name.toLowerCase() == name.toLowerCase() && 
       h.calories == calories &&
@@ -266,7 +147,6 @@ class MealProvider with ChangeNotifier {
     }
   }
 
-
   void setGoal(int newGoal) {
     _goal = newGoal;
     _saveToPrefs();
@@ -295,3 +175,4 @@ class MealProvider with ChangeNotifier {
     notifyListeners();
   }
 }
+

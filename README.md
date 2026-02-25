@@ -1,13 +1,29 @@
 # Calorie Tracker Mobile 🍎
 
-Um aplicativo Flutter nativo para monitoramento de calorias e macronutrientes, turbinado com Inteligência Artificial (Gemini).
+Um aplicativo Flutter nativo para monitoramento de calorias e macronutrientes, orquestrado com Inteligência Artificial (Gemini). Este projeto demonstra a capacidade de integrar modelos de linguagem em escala de dispositivos móveis.
 
-## ✨ Funcionalidades
+## 🏗️ Arquitetura do Sistema
 
-- **Análise com IA**: Tire uma foto do seu prato ou descreva sua refeição, e a IA estima calorias, proteínas, carboidratos e gorduras.
-- **Dashboard Diário**: Acompanhe sua meta de calorias e a distribuição de macros em tempo real.
-- **Cálculo Automático de Metas**: O app calcula sua Taxa de Metabolismo Basal (TDEE) com base no seu perfil.
-- **Histórico Inteligente**: Reutilize refeições passadas rapidamente através da busca no histórico.
+O projeto utiliza o **Pattern Provider** para gerenciamento de estado e uma arquitetura em camadas para garantir escalabilidade e fácil manutenção.
+
+```mermaid
+graph TD
+    A[UI - Flutter App] --> B[Provider Management]
+    B --> C[Service Layer - AI/API]
+    B --> D[Data Layer - Local Storage]
+    C --> E[Google Gemini API]
+    D --> F[SharedPreferences]
+    
+    subgraph "Orquestração de IA"
+    E
+    end
+```
+
+## ✨ Funcionalidades Principais
+
+- **Deep AI Recognition**: Estimativa inteligente de macronutrientes via reconhecimento de imagem e texto usando Gemini Pro.
+- **TDEE Engine**: Cálculo dinâmico de metas calóricas baseado no perfil biométrico do usuário.
+- **Persistent Analytics**: Histórico de consumo local com persistência de dados.
 
 ---
 

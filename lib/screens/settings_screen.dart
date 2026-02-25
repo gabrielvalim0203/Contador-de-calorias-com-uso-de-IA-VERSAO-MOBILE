@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/meal_provider.dart';
+import '../models/user_profile.dart';
 import 'profile_screen.dart';
 
 class SettingsScreen extends StatefulWidget {

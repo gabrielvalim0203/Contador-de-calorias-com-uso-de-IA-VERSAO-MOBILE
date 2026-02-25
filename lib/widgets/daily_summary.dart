@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/meal_provider.dart';
+import '../models/meal.dart';
+import 'macro_chart.dart';
 
 class DailySummary extends StatelessWidget {
   const DailySummary({super.key});
@@ -141,6 +143,9 @@ class DailySummary extends StatelessWidget {
               Text('$percentage% da meta', style: const TextStyle(color: Color(0xFFC7D2FE), fontSize: 12)),
             ],
           ),
+          const SizedBox(height: 20),
+          // Macronutrients Visualization
+          const MacroChart(),
           const SizedBox(height: 20),
           // Macronutrients Row
           Row(

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/meal_provider.dart';
+import '../providers/weight_provider.dart';
+import '../models/user_profile.dart';
+import '../widgets/weight_chart.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -48,6 +51,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _saveProfile() {
     final provider = Provider.of<MealProvider>(context, listen: false);
+    final weightProvider = Provider.of<WeightProvider>(context, listen: false);
     final weight = double.tryParse(_weightController.text) ?? 70.0;
     final height = double.tryParse(_heightController.text) ?? 170.0;
     final age = int.tryParse(_ageController.text) ?? 25;
@@ -61,15 +65,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
       useAutoGoal: _useAutoGoal,
     ));
 
+    // Also add to weight logs
+    weightProvider.addWeight(weight, DateTime.now());
+
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Perfil atualizado com sucesso!')),
+      const SnackBar(content: Text('Perfil e Peso atualizados!')),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<MealProvider>(context);
-    final tdee = provider.calculatedTDEE;
+    final tdee = provider.profile.calculatedTDEE;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -132,6 +139,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: 24),
+            _buildSectionTitle('Progresso de Peso'),
+            const SizedBox(height: 16),
+            const WeightChart(),
             const SizedBox(height: 24),
             _buildSectionTitle('Nível de Atividade'),
             const SizedBox(height: 16),
